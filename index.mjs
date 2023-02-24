@@ -16,19 +16,24 @@ const client = new MongoClient(uri);
 const app = express();
 app.set('port', process.env.PORT || 3000)
 app.get('/findOne', async (req,res) => {
+    let connection;
     try {
+        connection = await client.connect();
         const database = client.db('sample_airbnb');
         const listings = database.collection('listingsAndReviews');
         const filter = {};
 
-        if (req.query.property_type) {
-            filter.property_type = req.query.property_type;
-        }
-        if (req.query.bedrooms) {
-            filter.bedrooms = parseInt(req.query.bedrooms);
-        }
-        if (req.query.beds) {
-            filter.beds = parseInt(req.query.beds);
+        for (const field in req.query) {
+            if (req.query.hasOwnProperty(field)) {
+                if (field === 'bedrooms' ||
+                    field === 'beds' ||
+                    field === 'minimum_nights' ||
+                    field === 'maximum_nights') {
+                    filter[field] = parseInt(req.query[field]);
+                } else {
+                    filter[field] = req.query[field];
+                }
+            }
         }
 
         const projection = {
@@ -51,11 +56,12 @@ app.get('/findOne', async (req,res) => {
     } catch (error) {
         console.log(error)
     } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
+        // Ensures that the client will close when you exit the program
+        if (connection) {
+            await connection.close();
+        }
     }
 });
-
 
 app.use((req, res) => {
     res.type('text/plain');
