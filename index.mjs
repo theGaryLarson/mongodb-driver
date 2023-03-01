@@ -1,19 +1,22 @@
 import { MongoClient } from "mongodb";
 import * as dotenv from "dotenv";
 import express from "express";
+import cors from "cors";
 // link to connect and filter by property type, bedrooms and beds
 // http://localhost:3000/findOne?property_type=Apartment&bedrooms=2&beds=2
 dotenv.config();
-// console.log(process.env)
+
 const db_username = process.env.MONGO_DB_USERNAME;
 const db_password = process.env.MONGO_DB_PASSWORD;
 const db_url = process.env.MONGO_DB_URL;
-// Replace the uri string with your connection string.
+
 const uri =
     `mongodb+srv://${db_username}:${db_password}@${db_url}?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri);
+
 const app = express();
+app.use(cors());
 app.set('port', process.env.PORT || 3000)
 app.get('/findOne', async (req,res) => {
     let connection;
@@ -72,5 +75,9 @@ app.use((req, res) => {
 app.listen(app.get('port'), () => {
     console.log('Express started');
 });
+
+app.listen(80, function () {
+    console.log('CORS-enabled web server listening on port 80')
+})
 
 
