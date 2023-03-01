@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="airbnb_logo.png">
+    <title>Airbnb Listings Form</title>
+    <style>
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        label {
+            display: inline-block;
+            width: 300px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input {
+            width: 300px;
+            margin-bottom: 5px;
+        }
+
+        button {
+            margin-left: 250px;
+            margin-top: 5px;
+            border-radius: 5px;
+        }
+
+        .form-container {
+            background-color: lightblue;
+            width: 305px;
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .content-container {
+            margin-top: 10px;
+            background-color: lightblue;
+            width: 305px;
+            padding: 10px;
+            word-wrap: break-word;
+            border-radius: 15px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        #airbnb-listings {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        #airbnb-listings li {
+            margin-bottom: 10px;
+        }
+
+        #airbnb-listings li strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div class="logo-container">
+        <img class="logo-image" src="airbnb_logo.png" alt="Airbnb Logo">
+        <h1>Airbnb Listings</h1>
+    </div>
+    <div class="form-container">
+    <form>
+        <label for="property-type">Property Type:</label>
+        <input id="property-type" type="text" value="Apartment">
+        <br>
+        <label for="bedrooms">Number of Bedrooms:</label>
+        <input id="bedrooms" type="number" value="1">
+        <br>
+        <label for="beds">Number of Beds:</label>
+        <input id="beds" type="number" value="1">
+    </form>
+    <button onclick="fetchAirbnbListings()">Search</button>
+    </div>
+
+    <div class="content-container">
+    <ul id="airbnb-listings"></ul>
+    </div>
+</main>
+<script>
+    async function fetchAirbnbListings() {
+
+        const property_type = document.getElementById("property-type").value;
+
+        const bedrooms_text = document.getElementById("bedrooms").value;
+        const bedrooms_number = parseInt(bedrooms_text, 10);
+
+        const beds_text = document.getElementById("beds").value;
+        const beds_number = parseInt(beds_text, 10);
+
+        const api_endpoint = `http://localhost:3000/findOne?property_type=${property_type}&bedrooms=${bedrooms_number}&beds=${beds_number}`;
+        const response = await fetch(api_endpoint);
+
+        const json_response = await response.json()
+        const ul_airbnb_listings = document.getElementById("airbnb-listings");
+        ul_airbnb_listings.innerHTML = "";
+        console.log(json_response);
+        for (const property in json_response) {
+            if (json_response.hasOwnProperty(property)) {
+                const li = document.createElement('li');
+                if (property === '_id') continue;
+                if (property === 'listing_url') {
+                    li.innerHTML = `<strong>${property}:</strong> <a href=${json_response[property]}>${json_response[property]}</a>`
+                } else {
+                    li.innerHTML = `<strong>${property}:</strong> ${json_response[property]}`;
+                }
+
+                ul_airbnb_listings.appendChild(li);
+            }
+        }
+    }
+</script>
+</body>
+</html>
