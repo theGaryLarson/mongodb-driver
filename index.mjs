@@ -59,7 +59,7 @@ app.get('/findOne', async (req,res) => {
     } catch (error) {
         console.log(error)
     } finally {
-        // Ensures that the client will close when you exit the program
+        // Ensures that the client's connection will close when you exit the program
         if (connection) {
             await connection.close();
         }
