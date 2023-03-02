@@ -111,14 +111,10 @@
     async function fetchAirbnbListings() {
 
         const property_type = document.getElementById("property-type").value;
+        const bedrooms = document.getElementById("bedrooms").value;
+        const beds = document.getElementById("beds").value;
 
-        const bedrooms_text = document.getElementById("bedrooms").value;
-        const bedrooms_number = parseInt(bedrooms_text, 10);
-
-        const beds_text = document.getElementById("beds").value;
-        const beds_number = parseInt(beds_text, 10);
-
-        const api_endpoint = `http://localhost:3000/findOne?property_type=${property_type}&bedrooms=${bedrooms_number}&beds=${beds_number}`;
+        const api_endpoint = `http://localhost:3000/findOne?property_type=${property_type}&bedrooms=${bedrooms}&beds=${beds}`;
         const response = await fetch(api_endpoint);
 
         const json_response = await response.json()
@@ -127,8 +123,10 @@
         console.log(json_response);
         for (const property in json_response) {
             if (json_response.hasOwnProperty(property)) {
+                if (property === '_id') {
+                    continue;
+                }
                 const li = document.createElement('li');
-                if (property === '_id') continue;
                 if (property === 'listing_url') {
                     li.innerHTML = `<strong>${property}:</strong> <a href=${json_response[property]}>${json_response[property]}</a>`
                 } else {
