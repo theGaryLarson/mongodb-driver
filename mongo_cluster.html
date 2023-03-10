@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Find One</title>
+</head>
+<body>
+<h1>Find One</h1>
+<form id="find-one-form">
+  <div>
+    <label for="database-input">Database:</label>
+    <input type="text" id="database-input" name="database" required>
+  </div>
+  <div>
+    <label for="collection-input">Collection:</label>
+    <input type="text" id="collection-input" name="collection" required>
+  </div>
+  <div>
+    <label for="filter-input">Filter:</label>
+    <input type="text" id="filter-input" name="filter" placeholder="e.g. { property_type: 'Apartment', bedrooms: 2, beds: 2 }" required>
+  </div>
+  <div>
+    <label for="projection-input">Projection:</label>
+    <input type="text" id="projection-input" name="projection" placeholder="e.g. { id: 1, listing_url: 1, name: 1, summary: 1, property_type: 1, bedrooms: 1, beds: 1 }" required>
+  </div>
+  <button type="submit">Find One</button>
+</form>
+<div id="result"></div>
+<script>
+  const form = document.getElementById('find-one-form');
+  const resultDiv = document.getElementById('result');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const database = form.elements.database.value;
+    const collection = form.elements.collection.value;
+    const filter = JSON.parse(form.elements.filter.value);
+    const projection = JSON.parse(form.elements.projection.value);
+    // console.log(database);
+    // console.log(collection);
+    // console.log(filter);
+    // console.log(projection);
+
+    const json_response = await fetch('http://localhost:3000/findOne', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ database, collection, filter, projection })
+    });
+
+    const result = await json_response.json();
+    console.log(result.title);
+    resultDiv.textContent = JSON.stringify(result);
+  });
+</script>
+</body>
+</html>
